@@ -4,10 +4,6 @@ I work around air cargo operations, commercial processes,
 and the space where contracts, invoices, and daily operations
 don’t fully line up.
 
-Most of my background comes from ground handling and airline-facing roles,
-where small wording differences or process shortcuts
-tend to surface later as disputes, credits, or quiet losses.
-
 A lot of what I do stays internal by design.
 
 ---
@@ -74,15 +70,6 @@ Tools come last.
 - Python / Node.js  
 - Docker  
 - Language models, mainly for text-heavy and contract-like work  
-
----
-
-## Notes
-
-Not building products for show.  
-Not interested in generic “AI solutions”.
-
-Most work stays private for a reason.
 
 ---
 
