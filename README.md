@@ -42,9 +42,9 @@ which shaped how I approach ambiguity, data, and assumptions.
 ## Education (brief)
 
 My formal background spans:
-- Industrial Engineering  
-- Logistics & Finance  
-- Artificial Intelligence (graduate level, partially completed)  
+- Industrial Engineering (BSc) 
+- Logistics & Finance (MSc)
+- Artificial Intelligence (MSc)
 
 I also worked as a research and teaching assistant,
 which left me with a habit of documenting edge cases
