@@ -1,27 +1,15 @@
-```
-+----------------------------------------------------------------+
-| AIR WAYBILL                                   NOT NEGOTIABLE   |
-+-------------------------------+--------------------------------+
-| SHIPPER                       | CONSIGNEE                      |
-| Akif Can Kilic                | anyone stuck on the same       |
-|                               | "small" issue for years        |
-+-------------------------------+--------------------------------+
-| DEPARTURE                     | ROUTING                        |
-| Industrial Engineering        | Logistics & Finance            |
-|                               | > Artificial Intelligence      |
-+-------------------------------+--------------------------------+
-| HANDLING INFORMATION                                           |
-| SGHA / Annex B. Tariffs. Credit notes. Contract first.         |
-+----------------------------------------------------------------+
-| NATURE OF GOODS: edge cases, documented                        |
-+----------------------------------------------------------------+
-```
+<img src="assets/header.svg" alt="Akif Can Kilic. Air cargo, contracts, invoices, and the gaps between them." width="100%">
+
+<p>
+<a href="https://www.linkedin.com/in/akifcankilic/"><img src="assets/badges/linkedin.svg" alt="LinkedIn" height="52"></a>
+<a href="https://scholar.google.com/citations?user=2-mR1FwAAAAJ&hl=en"><img src="assets/badges/scholar.svg" alt="Google Scholar" height="52"></a>
+<a href="https://scholar.google.com/citations?user=2-mR1FwAAAAJ&hl=en"><img src="assets/badges/citations.svg" alt="Citation count" height="70"></a>
+<img src="assets/badges/h-index.svg" alt="h-index" height="52">
+</p>
 
 I work around air cargo operations, commercial processes,
 and the space where contracts, invoices, and daily operations
 don't fully line up.
-
-A lot of what I do stays internal by design.
 
 ## What I deal with today
 
@@ -91,6 +79,3 @@ mainly for text-heavy and contract-like work.
 If you work in aviation, logistics, or operational finance
 and keep running into the same "small" issues that never fully disappear,
 we'll probably understand each other.
-
-[LinkedIn](https://www.linkedin.com/in/akifcankilic/) ·
-[Google Scholar](https://scholar.google.com/citations?user=2-mR1FwAAAAJ&hl=en)
