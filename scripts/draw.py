@@ -21,7 +21,7 @@ ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
 FONTS = ASSETS / "fonts"
 
-SCHOLAR = {"citations": 21, "h-index": 2, "i10-index": 1, "checked": "Oct 2026"}
+SCHOLAR = {"citations": 21, "h-index": 2, "i10-index": 1, "updated": "Oct 26"}
 
 NAVY = "#13131e"
 NAVY_2 = "#1c1c2b"
@@ -143,11 +143,10 @@ def stats():
         p.append(text(x + 24, 92, num, 64, CREAM, 700))
         p.append(text(x + 26, 126, label, 20, CREAM, 700))
     sx = 3 * tw + 2 * gap + 24
-    note1, note2, note3 = "Google Scholar", "counted by hand,", f"last checked {SCHOLAR['checked']}"
-    p.append(text(sx, 62, note1, 22, SAFFRON, 700))
-    p.append(text(sx, 94, note2, 17, MUTED))
-    p.append(text(sx, 118, note3, 17, MUTED))
-    chars = "".join(t[0] + t[1] for t in tiles) + note1 + note2 + note3
+    note1, note2 = "Google Scholar", f"last update: {SCHOLAR['updated']}"
+    p.append(text(sx, 70, note1, 22, SAFFRON, 700))
+    p.append(text(sx, 102, note2, 17, MUTED))
+    chars = "".join(t[0] + t[1] for t in tiles) + note1 + note2
     return svg(W, H, chars, "\n".join(p))
 
 
