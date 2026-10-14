@@ -24,8 +24,9 @@ and [Dijital Otağ](https://www.skool.com/digital-otag-3125/about), a community 
 <img src="assets/timeline.svg" alt="Çelebi Ground Handling, aircraft ops to sales and marketing. Istanbul Kültür University, research assistant in Industrial Engineering, 2019 to 2022. Galatasaray University, MSc thesis on machine learning with wellbeing data. Invisible Technologies, AI trainer on 20+ projects for about 2.5 years. Çelebi Cargo, Frankfurt, sales and marketing, now." width="100%">
 
 BSc [Industrial Engineering](https://endm.iku.edu.tr) (IKU),
-MSc [Logistics & Financial Management](https://fbe.gsu.edu.tr/en) (Galatasaray),
-and part of a second MSc in AI, in Italy.
+MSc [Logistics & Financial Management](https://fbe.gsu.edu.tr/tr/lfy-ylisans) (Galatasaray).
+Also completed part of an MSc in [Artificial Intelligence for Science and Technology](https://www.unimib.it/graduate/artificial-intelligence) (Milano-Bicocca),
+and started a [PhD in Statistics](https://bilgipaketi.msgsu.edu.tr/programdetay/399/) at MSGSÜ, which I left.
 
 At Invisible I worked on tool use and computer control, model evaluation,
 red teaming, and multimodal tasks. At IKU I taught programming, OOP,
