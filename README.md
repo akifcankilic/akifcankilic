@@ -1,81 +1,49 @@
-<img src="assets/header.svg" alt="Akif Can Kilic. Air cargo, contracts, invoices, and the gaps between them." width="100%">
+<img src="assets/header.svg" alt="Akif Can Kılıç. Engineer, researcher, generalist. Frankfurt. Air cargo by day, Digital Yörük the rest of the time." width="100%">
 
 <p>
-<a href="https://www.linkedin.com/in/akifcankilic/"><img src="assets/badges/linkedin.svg" alt="LinkedIn" height="52"></a>
-<a href="https://scholar.google.com/citations?user=2-mR1FwAAAAJ&hl=en"><img src="assets/badges/scholar.svg" alt="Google Scholar" height="52"></a>
-<a href="https://scholar.google.com/citations?user=2-mR1FwAAAAJ&hl=en"><img src="assets/badges/citations.svg" alt="Citation count" height="70"></a>
-<img src="assets/badges/h-index.svg" alt="h-index" height="52">
+<a href="https://digitalyoruk.com"><img src="assets/links/site.svg" alt="digitalyoruk.com" height="40"></a>
+<a href="https://www.youtube.com/@digitaly%C3%B6r%C3%BCk"><img src="assets/links/youtube.svg" alt="YouTube" height="40"></a>
+<a href="https://www.skool.com/digital-otag-3125/about"><img src="assets/links/skool.svg" alt="Skool" height="40"></a>
+<a href="https://linkedin.com/in/akifcankilic"><img src="assets/links/linkedin.svg" alt="LinkedIn" height="40"></a>
+<a href="https://scholar.google.com/citations?user=2-mR1FwAAAAJ"><img src="assets/links/scholar.svg" alt="Google Scholar" height="40"></a>
+<a href="mailto:a@digitalyoruk.com"><img src="assets/links/email.svg" alt="Email" height="40"></a>
 </p>
 
-I work around air cargo operations, commercial processes,
-and the space where contracts, invoices, and daily operations
-don't fully line up.
+By day I'm a Sales & Marketing Specialist at Çelebi Cargo GmbH, working on
+air cargo contracts, tariffs, and invoices. The interesting part is where those
+don't match what actually happens on the ground.
 
-## What I deal with today
+On the side I run [Digital Yörük](https://digitalyoruk.com): AI education and
+consulting in Turkish, a [YouTube channel](https://www.youtube.com/@digitaly%C3%B6r%C3%BCk),
+and [Dijital Otağ](https://www.skool.com/digital-otag-3125/about), a community on Skool.
 
-- Ground handling processes in air cargo
-- SGHA contracts and Annex B interpretation
-- What is *actually* included vs what is assumed
-- Billing checks, tariff logic, revenue leakage
-- CPI / LCI adjustments and retroactive corrections
-- Automation where human judgment keeps repeating
+<img src="assets/divider.svg" alt="" width="100%">
 
-## Approach
+## How I got here
 
-I usually start by reading how things are *really* done,
-not how they are written in procedures or slides.
+<img src="assets/timeline.svg" alt="Çelebi Ground Handling, aircraft ops to sales and marketing. Istanbul Kültür University, research assistant in Industrial Engineering, 2019 to 2022. Galatasaray University, MSc thesis on machine learning with wellbeing data. Invisible Technologies, AI trainer on 20+ projects for about 2.5 years. Çelebi Cargo, Frankfurt, sales and marketing, now." width="100%">
 
-If a rule is enough, I keep it simple.
-If judgment is needed, I reduce everything around that judgment first.
+BSc Industrial Engineering (IKU), MSc Logistics & Financial Management (Galatasaray),
+and part of a second MSc in AI, in Italy.
 
-Tools come last.
+At Invisible I worked on tool use and computer control, model evaluation,
+red teaming, and multimodal tasks. At IKU I taught programming, OOP,
+numerical analysis, probability, simulation, and engineering economics.
 
-<details>
-<summary><b>Background</b></summary>
-<br>
+<img src="assets/divider.svg" alt="" width="100%">
 
-I've been working in air cargo and logistics-related roles since the mid-2010s,
-mainly on the commercial and operational side:
+## Things I work with
 
-- ground handling environments
-- airline account work
-- pricing logic and tariff structures
-- complaint, claim, and credit-note flows
+- SGHA contracts, Annex B, tariff logic, revenue leakage
+- n8n, Python, Node.js, Docker on a self-hosted VPS
+- Language models for text-heavy and contract-like work
 
-Over time, the work shifted toward automation,
-mostly to avoid repeating the same checks and explanations manually.
+<img src="assets/divider.svg" alt="" width="100%">
 
-Alongside industry work, I spent several years in academic
-and applied research environments,
-which shaped how I approach ambiguity, data, and assumptions.
+## Papers
 
-</details>
+<a href="https://scholar.google.com/citations?user=2-mR1FwAAAAJ"><img src="assets/stats.svg" alt="Google Scholar: 21 citations, h-index 2, i10-index 1" width="100%"></a>
 
-<details>
-<summary><b>Education</b></summary>
-<br>
-
-- Industrial Engineering (BSc)
-- Logistics & Finance (MSc)
-- Artificial Intelligence (MSc)
-
-I also worked as a research and teaching assistant,
-which left me with a habit of documenting edge cases
-and being uncomfortable with vague explanations.
-
-</details>
-
-<details>
-<summary><b>Tools (when relevant)</b></summary>
-<br>
-
-n8n, Python, Node.js, Docker, and language models,
-mainly for text-heavy and contract-like work.
-
-</details>
-
-## Contact
-
-If you work in aviation, logistics, or operational finance
-and keep running into the same "small" issues that never fully disappear,
-we'll probably understand each other.
+- *Prediction of University Students' Subjective Well-Being with Sleep and Physical Activity Data using Classification Algorithms*, Procedia Computer Science, 2022
+- *Prediction of Mental Health: Heuristic Subjective Well-Being Model on Perceived Stress Scale Using Machine Learning Algorithms*, International Journal of Machine Learning, 2023
+- *A Production Line Assignment Problem for a Textile Industry*, Mühendislik Bilimleri ve Tasarım Dergisi, 2023

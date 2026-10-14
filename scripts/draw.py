@@ -1,22 +1,17 @@
-"""Draws the notebook header and the little paper badges for the profile README.
+"""Draws the SVGs used in the profile README.
 
-    python scripts/draw.py           # redraw from assets/scholar.json
-    python scripts/draw.py --fetch   # refresh numbers from Google Scholar first
+    python scripts/draw.py
 
-Everything is plain SVG. The handwriting font is subset per file and embedded,
-because GitHub serves README images through a proxy that blocks webfont requests.
-Wobble is seeded by the text it surrounds, so redrawing never produces a diff
-unless something actually changed.
+Colours come from kilim weaving (madder, saffron, indigo, walnut) on the
+dark navy of digitalyoruk.com. Fonts are subset per file and embedded, since
+GitHub serves README images through a proxy that blocks webfont requests.
+
+Scholar numbers are updated by hand: Scholar blocks requests from CI.
 """
 
 import base64
 import io
-import json
-import random
-import re
-import sys
-import urllib.request
-from datetime import date
+from html import escape
 from pathlib import Path
 
 from fontTools import subset
@@ -24,195 +19,197 @@ from fontTools.ttLib import TTFont
 
 ROOT = Path(__file__).resolve().parent.parent
 ASSETS = ROOT / "assets"
-FONT = ASSETS / "fonts" / "caveat-500.woff2"
-DATA = ASSETS / "scholar.json"
-SCHOLAR_ID = "2-mR1FwAAAAJ"
+FONTS = ASSETS / "fonts"
 
-INK = "#2a2a35"
-PENCIL = "#6b6b78"
-RED = "#c8553d"
-PAPER = "#fbf7ec"
-RULE = "#c9d8e8"
-MARKER = "#ffe066"
+SCHOLAR = {"citations": 21, "h-index": 2, "i10-index": 1, "checked": "Oct 2026"}
 
-
-# --- font -----------------------------------------------------------------
-
-_font = TTFont(FONT)
-_cmap = _font.getBestCmap()
-_hmtx = _font["hmtx"]
-_upm = _font["head"].unitsPerEm
+NAVY = "#13131e"
+NAVY_2 = "#1c1c2b"
+CREAM = "#efe6d2"
+MUTED = "#9a9ab8"
+MADDER = "#c2412d"
+SAFFRON = "#e3a72f"
+INDIGO = "#6366f1"
+TEAL = "#2f8f7f"
+WALNUT = "#7a4a2a"
+KILIM = [MADDER, SAFFRON, INDIGO, TEAL]
 
 
-def text_width(s, size):
-    return sum(_hmtx[_cmap[ord(c)]][0] for c in s if ord(c) in _cmap) * size / _upm
+# --- fonts ------------------------------------------------------------------
+
+def font_face(chars, weights=(400, 700)):
+    rules = []
+    for w in weights:
+        f = TTFont(FONTS / f"inconsolata-{w}.woff2")
+        opts = subset.Options()
+        opts.flavor = "woff2"
+        sub = subset.Subsetter(opts)
+        sub.populate(text="".join(sorted(set(chars))))
+        sub.subset(f)
+        buf = io.BytesIO()
+        f.flavor = "woff2"
+        f.save(buf)
+        b64 = base64.b64encode(buf.getvalue()).decode()
+        rules.append(f"@font-face{{font-family:inc;font-weight:{w};"
+                     f"src:url(data:font/woff2;base64,{b64}) format('woff2')}}")
+    return "".join(rules)
 
 
-def font_face(chars):
-    opts = subset.Options()
-    opts.flavor = "woff2"
-    opts.layout_features = ["kern", "liga", "calt"]
-    sub = subset.Subsetter(opts)
-    f = TTFont(FONT)
-    sub.populate(text="".join(sorted(set(chars))))
-    sub.subset(f)
-    buf = io.BytesIO()
-    f.flavor = "woff2"
-    f.save(buf)
-    b64 = base64.b64encode(buf.getvalue()).decode()
-    return f"@font-face{{font-family:hand;src:url(data:font/woff2;base64,{b64}) format('woff2')}}"
-
-
-# --- pen ------------------------------------------------------------------
-
-def stroke(rng, x1, y1, x2, y2, wobble=1.2):
-    """One slightly bowed line, like drawing without a ruler."""
-    mx = (x1 + x2) / 2 + rng.uniform(-wobble, wobble)
-    my = (y1 + y2) / 2 + rng.uniform(-wobble, wobble)
-    j = lambda: rng.uniform(-wobble * 0.6, wobble * 0.6)
-    return f"M{x1 + j():.1f} {y1 + j():.1f} Q{mx:.1f} {my:.1f} {x2 + j():.1f} {y2 + j():.1f}"
-
-
-def box(rng, x, y, w, h, wobble=1.2):
-    """Rectangle drawn twice, corners overshooting a bit."""
-    d = []
-    for _ in range(2):
-        o = lambda: rng.uniform(-2.5, 1.5)
-        d.append(stroke(rng, x + o(), y, x + w - o(), y, wobble))
-        d.append(stroke(rng, x + w, y + o(), x + w, y + h - o(), wobble))
-        d.append(stroke(rng, x + w - o(), y + h, x + o(), y + h, wobble))
-        d.append(stroke(rng, x, y + h - o(), x, y + o(), wobble))
-    return " ".join(d)
-
-
-def arrow(rng, x1, y1, x2, y2):
-    """Small outward arrow (↗), the font has no glyph for it."""
-    head = 5
-    return " ".join([
-        stroke(rng, x1, y1, x2, y2, 0.6),
-        stroke(rng, x2 - head, y2 + 0.5, x2, y2, 0.4),
-        stroke(rng, x2, y2, x2 - 0.5, y2 + head, 0.4),
-    ])
+def width(s, size):
+    """Inconsolata is monospaced at half an em."""
+    return len(s) * size * 0.5
 
 
 def svg(w, h, chars, body):
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}">\n'
-        f"<style>{font_face(chars)} text{{font-family:hand,'Comic Sans MS',cursive}}</style>\n"
+        f"<style>{font_face(chars)} text{{font-family:inc,Consolas,monospace}}</style>\n"
         f"{body}\n</svg>\n"
     )
 
 
-# --- pieces ---------------------------------------------------------------
+def text(x, y, s, size, fill, weight=400, anchor="start", extra=""):
+    return (f'<text x="{x}" y="{y}" font-size="{size}" font-weight="{weight}" '
+            f'fill="{fill}" text-anchor="{anchor}" {extra}>{escape(s)}</text>')
 
-def badge(label, note=None, link_arrow=False, highlight=None):
-    """A torn-off paper tag. `highlight` is a substring of label to mark yellow."""
-    rng = random.Random(label)
-    size, pad = 24, 16
-    h = 64 if note else 46
-    tw = text_width(label, size)
-    w = round(max(tw + (14 if link_arrow else 0), text_width(note or "", 15)) + pad * 2) + 6
-    W, H = w + 6, h + 6
-    base = 3 + (34 if note else h * 0.68)
-    tilt = rng.uniform(-1.2, 1.2)
-    parts = [f'<g transform="rotate({tilt:.2f} {W / 2:.0f} {h / 2:.0f})">']
-    parts.append(f'<rect x="3" y="3" width="{w}" height="{h}" fill="{PAPER}"/>')
-    if highlight and highlight in label:
-        hx = 3 + pad + text_width(label[: label.index(highlight)], size)
-        hw = text_width(highlight, size)
-        parts.append(
-            f'<path d="{stroke(rng, hx - 3, base - 8, hx + hw + 3, base - 10, 1.5)}" '
-            f'stroke="{MARKER}" stroke-width="14" stroke-linecap="round" fill="none" opacity="0.85"/>'
-        )
-    parts.append(f'<path d="{box(rng, 3, 3, w, h)}" stroke="{INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>')
-    parts.append(f'<text x="{3 + pad}" y="{base:.1f}" font-size="{size}" fill="{INK}">{label}</text>')
-    if link_arrow:
-        ax = 3 + pad + tw + 6
-        parts.append(f'<path d="{arrow(rng, ax, base - 4, ax + 9, base - 16)}" stroke="{INK}" stroke-width="1.6" fill="none" stroke-linecap="round"/>')
-    if note:
-        parts.append(f'<text x="{3 + pad}" y="{h - 6}" font-size="15" fill="{PENCIL}">{note}</text>')
-    parts.append("</g>")
-    return svg(W, H, label + (note or ""), "\n".join(parts))
 
+# --- kilim ------------------------------------------------------------------
+
+def kilim_band(y, w, h=28, offset=0):
+    """A woven strip: stepped diamonds alternating colours, hooks in between."""
+    u = h * 1.6
+    p = [f'<rect x="0" y="{y}" width="{w}" height="{h}" fill="{WALNUT}"/>']
+    n = int(w / u) + 2
+    for i in range(-1, n):
+        cx = i * u + u / 2
+        cy = y + h / 2
+        a = KILIM[(i + offset) % len(KILIM)]
+        b = KILIM[(i + offset + 2) % len(KILIM)]
+        r = h / 2 - 2
+        p.append(f'<path d="M{cx} {cy - r} L{cx + r} {cy} L{cx} {cy + r} L{cx - r} {cy} Z" fill="{a}"/>')
+        r2 = r * 0.55
+        p.append(f'<path d="M{cx} {cy - r2} L{cx + r2} {cy} L{cx} {cy + r2} L{cx - r2} {cy} Z" fill="{b}"/>')
+        p.append(f'<rect x="{cx - 2}" y="{cy - 2}" width="4" height="4" fill="{CREAM}"/>')
+        # hooks between diamonds
+        hx = cx + u / 2
+        p.append(f'<path d="M{hx - 4} {y + 3} L{hx} {y + 7} L{hx + 4} {y + 3} M{hx - 4} {y + h - 3} '
+                 f'L{hx} {y + h - 7} L{hx + 4} {y + h - 3}" stroke="{CREAM}" stroke-width="1.6" fill="none"/>')
+    p.append(f'<rect x="0" y="{y}" width="{w}" height="1.5" fill="{CREAM}" opacity="0.5"/>')
+    p.append(f'<rect x="0" y="{y + h - 1.5}" width="{w}" height="1.5" fill="{CREAM}" opacity="0.5"/>')
+    return "\n".join(p)
+
+
+# --- pieces -----------------------------------------------------------------
 
 def header():
-    rng = random.Random("akif")
-    W, H = 860, 205
-    line = 34
-    top = 62
-    p = [f'<rect width="{W}" height="{H}" rx="3" fill="{PAPER}"/>']
-    for i in range(int((H - top) / line) + 1):
-        y = top + i * line
-        p.append(f'<path d="{stroke(rng, 0, y, W, y, 0.6)}" stroke="{RULE}" stroke-width="1"/>')
-    p.append(f'<path d="{stroke(rng, 70, 0, 70, H, 0.8)}" stroke="{RED}" stroke-width="1.4" opacity="0.7"/>')
-    for y in (45, 102, 160):
-        p.append(f'<circle cx="28" cy="{y}" r="9" fill="#e9e3d3"/>')
-
-    name = "Akif Can Kilic"
-    p.append(f'<text x="96" y="{top + line - 8}" font-size="54" fill="{INK}">{name}</text>')
-    nw = text_width(name, 54)
-    p.append(f'<path d="{stroke(rng, 98, top + line + 2, 96 + nw + 8, top + line - 2, 2.5)}" stroke="{RED}" stroke-width="2.2" fill="none" stroke-linecap="round"/>')
-
-    l1 = "air cargo · contracts · invoices · the gaps between them"
-    p.append(f'<text x="100" y="{top + 2 * line - 8}" font-size="27" fill="{INK}">{l1}</text>')
-
-    a = "how it's written in procedures"
-    b = "how it's really done"
-    y3 = top + 3 * line - 8
-    p.append(f'<text x="100" y="{y3}" font-size="27" fill="{PENCIL}">{a}</text>')
-    aw = text_width(a, 27)
-    p.append(f'<path d="{stroke(rng, 98, y3 - 8, 104 + aw, y3 - 10, 1.5)}" stroke="{INK}" stroke-width="2" fill="none" stroke-linecap="round"/>')
-    bx = 100 + aw + 36
-    p.append(f'<path d="{arrow(rng, bx - 26, y3 - 4, bx - 8, y3 - 14)}" stroke="{RED}" stroke-width="1.8" fill="none" stroke-linecap="round"/>')
-    p.append(f'<text x="{bx}" y="{y3}" font-size="27" fill="{INK}">{b}</text>')
-
-    note = "mostly internal, by design."
-    p.append(f'<text x="{W - 24}" y="{H - 16}" font-size="19" fill="{PENCIL}" text-anchor="end" transform="rotate(-2 {W - 24} {H - 16})">{note}</text>')
-
-    return svg(W, H, name + l1 + a + b + note, "\n".join(p))
+    W, H = 880, 280
+    name = "Akif Can Kılıç"
+    role = "engineer · researcher · generalist"
+    where = "Frankfurt"
+    line1 = "air cargo by day  —  Digital Yörük the rest of the time"
+    p = [
+        f'<rect width="{W}" height="{H}" rx="14" fill="{NAVY}"/>',
+        f'<clipPath id="c"><rect width="{W}" height="{H}" rx="14"/></clipPath>',
+        f'<g clip-path="url(#c)">',
+        kilim_band(0, W, 30),
+        kilim_band(H - 30, W, 30, offset=1),
+        "</g>",
+        text(56, 122, name, 60, CREAM, 700),
+        f'<rect x="58" y="140" width="{width(name, 60) - 4}" height="5" fill="{MADDER}"/>',
+        f'<rect x="58" y="140" width="{(width(name, 60) - 4) * 0.5}" height="5" fill="{SAFFRON}"/>',
+        f'<rect x="58" y="140" width="{(width(name, 60) - 4) * 0.25}" height="5" fill="{INDIGO}"/>',
+        text(56, 184, role, 24, SAFFRON, 700),
+        text(56, 220, line1, 19, MUTED),
+        text(W - 56, 122, where, 20, MUTED, 400, "end"),
+        f'<circle cx="{W - 56 - width(where, 20) - 14}" cy="115" r="5" fill="{MADDER}"/>',
+    ]
+    return svg(W, H, name + role + where + line1, "\n".join(p))
 
 
-# --- scholar --------------------------------------------------------------
+def stats():
+    W, H = 880, 150
+    tiles = [
+        (str(SCHOLAR["citations"]), "citations", MADDER),
+        (str(SCHOLAR["h-index"]), "h-index", INDIGO),
+        (str(SCHOLAR["i10-index"]), "i10-index", TEAL),
+    ]
+    gap = 16
+    tw = (W - gap * 2 - 220) / 3
+    p = [f'<rect width="{W}" height="{H}" rx="14" fill="{NAVY}"/>']
+    for i, (num, label, col) in enumerate(tiles):
+        x = i * (tw + gap)
+        p.append(f'<rect x="{x}" y="0" width="{tw}" height="{H}" rx="14" fill="{col}"/>')
+        p.append(f'<path d="M{x + tw - 34} 14 l10 10 l-10 10 l-10 -10 Z" fill="{CREAM}" opacity="0.35"/>')
+        p.append(text(x + 24, 92, num, 64, CREAM, 700))
+        p.append(text(x + 26, 126, label, 20, CREAM, 700))
+    sx = 3 * tw + 2 * gap + 24
+    note1, note2, note3 = "Google Scholar", "counted by hand,", f"last checked {SCHOLAR['checked']}"
+    p.append(text(sx, 62, note1, 22, SAFFRON, 700))
+    p.append(text(sx, 94, note2, 17, MUTED))
+    p.append(text(sx, 118, note3, 17, MUTED))
+    chars = "".join(t[0] + t[1] for t in tiles) + note1 + note2 + note3
+    return svg(W, H, chars, "\n".join(p))
 
-def fetch_scholar():
-    req = urllib.request.Request(
-        f"https://scholar.google.com/citations?user={SCHOLAR_ID}&hl=en",
-        headers={"User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 "
-                               "(KHTML, like Gecko) Chrome/126.0 Safari/537.36"},
-    )
-    html = urllib.request.urlopen(req, timeout=30).read().decode("utf-8", "replace")
-    # stats table: [citations all, since, h-index all, since, i10 all, since]
-    cells = [int(n) for n in re.findall(r'class="gsc_rsb_std">(\d+)<', html)]
-    if len(cells) < 6:
-        raise RuntimeError("stats table not found (captcha?)")
-    return {"citations": cells[0], "h_index": cells[2], "i10_index": cells[4],
-            "updated": date.today().isoformat()}
+
+def timeline():
+    stops = [
+        ("Çelebi Ground Handling", "aircraft ops → sales & marketing", MADDER),
+        ("Istanbul Kültür University", "research assistant, IE · 2019–2022", SAFFRON),
+        ("Galatasaray University", "MSc thesis · ML on wellbeing data", INDIGO),
+        ("Invisible Technologies", "AI trainer · 20+ projects, ~2.5 yrs", TEAL),
+        ("Çelebi Cargo, Frankfurt", "sales & marketing · now", MADDER),
+    ]
+    W, row, top = 880, 62, 34
+    H = top + row * (len(stops) - 1) + 44
+    p = [f'<rect width="{W}" height="{H}" rx="14" fill="{NAVY}"/>']
+    x = 60
+    for i in range(len(stops) - 1):
+        y1, y2 = top + i * row, top + (i + 1) * row
+        p.append(f'<line x1="{x}" y1="{y1}" x2="{x}" y2="{y2}" stroke="{stops[i + 1][2]}" stroke-width="3" opacity="0.6"/>')
+    chars = ""
+    for i, (title, sub, col) in enumerate(stops):
+        y = top + i * row
+        p.append(f'<path d="M{x} {y - 11} L{x + 11} {y} L{x} {y + 11} L{x - 11} {y} Z" fill="{col}"/>')
+        p.append(f'<rect x="{x - 2.5}" y="{y - 2.5}" width="5" height="5" fill="{CREAM}"/>')
+        p.append(text(x + 30, y + 2, title, 21, CREAM, 700))
+        p.append(text(x + 30, y + 24, sub, 16, MUTED))
+        chars += title + sub
+    return svg(W, H, chars, "\n".join(p))
+
+
+def divider():
+    W, H = 880, 18
+    return svg(W, H, "", kilim_band(0, W, H))
+
+
+def pill(label, col):
+    size, pad, H = 18, 18, 40
+    W = round(width(label, size) + pad * 2 + 18)
+    p = [
+        f'<rect width="{W}" height="{H}" rx="20" fill="{col}"/>',
+        f'<path d="M{pad + 4} {H / 2 - 5} l5 5 l-5 5 l-5 -5 Z" fill="{CREAM}"/>',
+        text(pad + 18, H / 2 + 6, label, size, CREAM, 700),
+    ]
+    return svg(W, H, label, "\n".join(p))
 
 
 def main():
-    data = json.loads(DATA.read_text()) if DATA.exists() else {}
-    if "--fetch" in sys.argv:
-        try:
-            data = fetch_scholar()
-            DATA.write_text(json.dumps(data, indent=2) + "\n")
-        except Exception as e:  # keep yesterday's numbers rather than failing the job
-            print(f"scholar fetch failed, keeping previous numbers: {e}", file=sys.stderr)
-
-    out = ASSETS / "badges"
-    out.mkdir(parents=True, exist_ok=True)
-    (ASSETS / "header.svg").write_text(header())
-    (out / "linkedin.svg").write_text(badge("linkedin", link_arrow=True))
-    (out / "scholar.svg").write_text(badge("google scholar", link_arrow=True))
-
-    cites = data.get("citations")
-    when = data.get("updated")
-    note = f"as of {date.fromisoformat(when).strftime('%d %b %Y').lower()}" if when else "not counted yet"
-    if cites is None:
-        (out / "citations.svg").write_text(badge("cited ? times", note=note))
-    else:
-        (out / "citations.svg").write_text(badge(f"cited {cites} times", note=note, highlight=str(cites)))
-    h = data.get("h_index")
-    (out / "h-index.svg").write_text(badge(f"h-index {h if h is not None else '?'}"))
+    out = ASSETS
+    (out / "header.svg").write_text(header())
+    (out / "stats.svg").write_text(stats())
+    (out / "timeline.svg").write_text(timeline())
+    (out / "divider.svg").write_text(divider())
+    links = ASSETS / "links"
+    links.mkdir(exist_ok=True)
+    for name, label, col in [
+        ("email", "email", MADDER),
+        ("linkedin", "linkedin", INDIGO),
+        ("youtube", "youtube", MADDER),
+        ("skool", "skool", SAFFRON),
+        ("scholar", "scholar", TEAL),
+        ("site", "digitalyoruk.com", WALNUT),
+    ]:
+        (links / f"{name}.svg").write_text(pill(label, col))
 
 
 if __name__ == "__main__":
