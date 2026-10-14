@@ -11,7 +11,7 @@
 |                               | > Artificial Intelligence      |
 +-------------------------------+--------------------------------+
 | HANDLING INFORMATION                                           |
-| SGHA / Annex B. Tariffs. Credit notes. Read the contract first.|
+| SGHA / Annex B. Tariffs. Credit notes. Contract first.         |
 +----------------------------------------------------------------+
 | NATURE OF GOODS: edge cases, documented                        |
 +----------------------------------------------------------------+
